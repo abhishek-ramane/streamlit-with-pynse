@@ -5,7 +5,6 @@ import datetime
 import json
 # from pymongo import MongoClient
 import sqlite3
-import mysql.connector
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
 nse = Nse()
@@ -32,7 +31,7 @@ symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "
 
 def get_data(symbol):
     df = nse.option_chain(symbol)
-    df.index = df.get("strikePrice")
+    # df.index = df.get("strikePrice")
     # df.drop(
     #     df.columns.difference(
     #         ["CE.openInterest", "PE.openInterest"]

@@ -1,3 +1,5 @@
 venv/
 .idea/
 Option-chain.db
+pynse/symbol_list
+pynse/__pycache__/
