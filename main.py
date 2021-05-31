@@ -30,27 +30,32 @@ symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "
            "UPL", "VEDL", "VOLTAS", "WIPRO", "ZEEL"]
 
 st.title("Open Interest")
+try:
+    selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
+    data = nse.option_chain(selected_symbol)
+    data_for_chart = data
+    data_for_chart.index = data_for_chart.get("strikePrice")
+    data_for_chart.drop(
+        data_for_chart.columns.difference(
+            ["CE.openInterest", "PE.openInterest"]
+        ),
+        1,
+        inplace=True,
+    )
+    st.write("Open Interest")
+    st.bar_chart(data_for_chart)
 
-selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
-data = nse.option_chain(selected_symbol)
-data_for_chart = data
-data_for_chart.index = data_for_chart.get("strikePrice")
-data_for_chart.drop(
-    data_for_chart.columns.difference(
-        ["CE.openInterest", "PE.openInterest"]
-    ),
-    1,
-    inplace=True,
-)
-st.bar_chart(data_for_chart)
-
-data_for_changeinOpenInterest = nse.option_chain(selected_symbol)
-data_for_changeinOpenInterest.index = data_for_changeinOpenInterest.get("strikePrice")
-data_for_changeinOpenInterest.drop(
-    data_for_changeinOpenInterest.columns.difference(
-        ["CE.changeinOpenInterest", "PE.changeinOpenInterest"]
-    ),
-    1,
-    inplace=True,
-)
-st.bar_chart(data_for_changeinOpenInterest)
+    data_for_changeinOpenInterest = nse.option_chain(selected_symbol)
+    data_for_changeinOpenInterest.index = data_for_changeinOpenInterest.get("strikePrice")
+    data_for_changeinOpenInterest.drop(
+        data_for_changeinOpenInterest.columns.difference(
+            ["CE.changeinOpenInterest", "PE.changeinOpenInterest"]
+        ),
+        1,
+        inplace=True,
+    )
+    st.write("Changed Open Interest")
+    st.bar_chart(data_for_changeinOpenInterest)
+except Exception as e:
+    st.error(e)
+    print(e)
