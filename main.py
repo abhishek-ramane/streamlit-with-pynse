@@ -1,3 +1,5 @@
+import logging
+
 from pynse import *
 import streamlit as st
 from logging import info, error, fatal, debug, critical
@@ -6,7 +8,7 @@ import datetime
 import json
 from pymongo import MongoClient
 
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s;%(levelname)s;%(message)s")
 nse = Nse()
 
 symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "AMBUJACEM", "APLLTD", "APOLLOHOSP",
