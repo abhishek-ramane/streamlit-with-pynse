@@ -8,7 +8,7 @@ import datetime
 import json
 from pymongo import MongoClient
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s;%(levelname)s;%(message)s")
+logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
 nse = Nse()
 
 symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "AMBUJACEM", "APLLTD", "APOLLOHOSP",
@@ -32,7 +32,9 @@ symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "
 st.title("Open Interest")
 try:
     selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
+    info(selected_symbol)
     data = nse.option_chain(selected_symbol)
+    info(data)
     data_for_chart = data
     data_for_chart.index = data_for_chart.get("strikePrice")
     data_for_chart.drop(
@@ -46,6 +48,7 @@ try:
     st.bar_chart(data_for_chart)
 
     data_for_changeinOpenInterest = nse.option_chain(selected_symbol)
+    info(data_for_changeinOpenInterest)
     data_for_changeinOpenInterest.index = data_for_changeinOpenInterest.get("strikePrice")
     data_for_changeinOpenInterest.drop(
         data_for_changeinOpenInterest.columns.difference(
