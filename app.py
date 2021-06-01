@@ -5,6 +5,7 @@ import datetime
 import json
 # from pymongo import MongoClient
 import sqlite3
+import matplotlib
 
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
 nse = Nse()
@@ -29,6 +30,9 @@ symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "
            "UPL", "VEDL", "VOLTAS", "WIPRO", "ZEEL"]
 
 
+# symbols = ["ACC"]
+
+
 def get_data(symbol):
     df = nse.option_chain(symbol)
     # df.index = df.get("strikePrice")
@@ -39,7 +43,21 @@ def get_data(symbol):
     #     1,
     #     inplace=True,
     # )
-    df.to_sql(name=symbol, con=conn, if_exists="append")
+    select_cols = ["strikePrice", "CE.openInterest", "PE.openInterest"]
+    df_select_cols = df[select_cols]
+    # ce_min = df_select_cols["CE.openInterest"].min()
+    # ce_max = df_select_cols["CE.openInterest"].max(4)
+    # pe_min = df_select_cols["PE.openInterest"].min()
+    # pe_max = df_select_cols["PE.openInterest"].max()
+    ce_max_five = df_select_cols["CE.openInterest"].nlargest(5).index
+    pe_max_five = df_select_cols["PE.openInterest"].nlargest(5).index
+    # df_select_cols =
+    df1 = df_select_cols[df_select_cols.index.isin(ce_max_five)]
+    df2 = df_select_cols[df_select_cols.index.isin(pe_max_five)]
+    df_filtered = df1.append(df2, sort=False)
+    df_filtered_removed_duplicate = df_filtered[~df_filtered.duplicated()]
+    print(df_filtered_removed_duplicate)
+    df_filtered_removed_duplicate.to_sql(name=symbol, con=conn, if_exists="append")
 
 
 def read_sql(symbol):
@@ -52,6 +70,9 @@ def read_sql(symbol):
 
 
 if __name__ == '__main__':
+    start_time = datetime.datetime.now()
+    print(start_time)
     for symbol in symbols:
         get_data(symbol)
-        read_sql(symbol)
+        # read_sql(symbol)
+    print(f"Start time= {start_time} : End Time= {datetime.datetime.now()}")
