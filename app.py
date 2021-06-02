@@ -3,7 +3,7 @@ from logging import info, error, fatal, debug, critical
 import pandas as pd
 import datetime
 import json
-# from pymongo import MongoClient
+from pymongo import MongoClient
 import sqlite3
 import matplotlib
 
@@ -45,19 +45,15 @@ def get_data(symbol):
     # )
     select_cols = ["strikePrice", "CE.openInterest", "PE.openInterest"]
     df_select_cols = df[select_cols]
-    # ce_min = df_select_cols["CE.openInterest"].min()
-    # ce_max = df_select_cols["CE.openInterest"].max(4)
-    # pe_min = df_select_cols["PE.openInterest"].min()
-    # pe_max = df_select_cols["PE.openInterest"].max()
-    ce_max_five = df_select_cols["CE.openInterest"].nlargest(5).index
-    pe_max_five = df_select_cols["PE.openInterest"].nlargest(5).index
-    # df_select_cols =
-    df1 = df_select_cols[df_select_cols.index.isin(ce_max_five)]
-    df2 = df_select_cols[df_select_cols.index.isin(pe_max_five)]
-    df_filtered = df1.append(df2, sort=False)
-    df_filtered_removed_duplicate = df_filtered[~df_filtered.duplicated()]
-    print(df_filtered_removed_duplicate)
-    df_filtered_removed_duplicate.to_sql(name=symbol, con=conn, if_exists="append")
+    # ce_max_five = df_select_cols["CE.openInterest"].nlargest(5).index
+    # pe_max_five = df_select_cols["PE.openInterest"].nlargest(5).index
+    # df1 = df_select_cols[df_select_cols.index.isin(ce_max_five)]
+    # df2 = df_select_cols[df_select_cols.index.isin(pe_max_five)]
+    # df_filtered = df1.append(df2, sort=False)
+    # df_filtered_removed_duplicate = df_filtered[~df_filtered.duplicated()]
+    df_select_cols['created_timestamp'] = datetime.datetime.now()
+    # print(df_select_cols)
+    df.to_sql(name=symbol, con=conn, if_exists="append")
 
 
 def read_sql(symbol):
