@@ -13,8 +13,9 @@ option_chain = n.index_option_chain("NIFTY")
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
 
-symbols = ["AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "AMBUJACEM", "APLLTD", "APOLLOHOSP",
-           "APOLLOTYRE", "ASHOKLEY", "ASIANPAINT", "AUBANK", "AUROPHARMA", "AXISBANK", "BAJAJ-AUTO", "BAJAJFINSV",
+symbols = ["NIFTY", "BANKNIFTY", "AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "AMBUJACEM",
+           "APLLTD", "APOLLOHOSP", "APOLLOTYRE", "ASHOKLEY", "ASIANPAINT", "AUBANK", "AUROPHARMA", "AXISBANK",
+           "BAJAJ-AUTO", "BAJAJFINSV",
            "BAJFINANCE", "BALKRISIND", "BANDHANBNK", "BANKBARODA", "BATAINDIA", "BEL", "BERGEPAINT", "BHARATFORG",
            "BHARTIARTL", "BHEL", "BIOCON", "BOSCHLTD", "BPCL", "BRITANNIA", "CADILAHC", "CANBK", "CHOLAFIN", "CIPLA",
            "COALINDIA", "COFORGE", "COLPAL", "CONCOR", "CUB", "CUMMINSIND", "DABUR", "DEEPAKNTR", "DIVISLAB", "DLF",
@@ -35,7 +36,11 @@ st.title("Open Interest")
 try:
     selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
     logger.info(f'Will fetch the data for {selected_symbol}')
-    data = n.equity_option_chain(selected_symbol)
+    data = None
+    if selected_symbol in ["NIFTY", "BANKNIFTY"]:
+        data = n.index_option_chain(selected_symbol)
+    else:
+        data = n.equity_option_chain(selected_symbol)
     data = pd.json_normalize(data['filtered']['data'])
     # logger.info(data)
     data_for_chart = data
@@ -49,7 +54,13 @@ try:
     )
     st.write("Open Interest")
     st.bar_chart(data_for_chart)
-    data_for_changeinOpenInterest = n.equity_option_chain(selected_symbol)
+
+    data_for_changeinOpenInterest = None
+    if selected_symbol in ["NIFTY", "BANKNIFTY"]:
+        data_for_changeinOpenInterest = n.index_option_chain(selected_symbol)
+    else:
+        data_for_changeinOpenInterest = n.equity_option_chain(selected_symbol)
+    # data_for_changeinOpenInterest = n.equity_option_chain(selected_symbol)
     data_for_changeinOpenInterest = pd.json_normalize(data_for_changeinOpenInterest['filtered']['data'])
     # logger.info(data_for_changeinOpenInterest)
     data_for_changeinOpenInterest.index = data_for_changeinOpenInterest.get("strikePrice")
