@@ -12,6 +12,7 @@ option_chain = n.index_option_chain("NIFTY")
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
+st.set_page_config(layout='wide')
 
 symbols = ["NIFTY", "BANKNIFTY", "AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "AMBUJACEM",
            "APLLTD", "APOLLOHOSP", "APOLLOTYRE", "ASHOKLEY", "ASIANPAINT", "AUBANK", "AUROPHARMA", "AXISBANK",
@@ -32,15 +33,18 @@ symbols = ["NIFTY", "BANKNIFTY", "AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "A
            "TATASTEEL", "TCS", "TECHM", "TITAN", "TORNTPHARM", "TORNTPOWER", "TRENT", "TVSMOTOR", "UBL", "ULTRACEMCO",
            "UPL", "VEDL", "VOLTAS", "WIPRO", "ZEEL"]
 
-st.title("Open Interest")
+selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
+st.title(f"Open Interest : {selected_symbol}")
 try:
-    selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
     logger.info(f'Will fetch the data for {selected_symbol}')
     data = None
     if selected_symbol in ["NIFTY", "BANKNIFTY"]:
         data = n.index_option_chain(selected_symbol)
     else:
         data = n.equity_option_chain(selected_symbol)
+    # st.write(data)
+    st.markdown(f":rocket: ** Current Price :** {data['records']['underlyingValue']}")
+    st.markdown(f":hourglass: ** Updated :** {data['records']['timestamp']}")
     data = pd.json_normalize(data['filtered']['data'])
     # logger.info(data)
     data_for_chart = data
@@ -52,7 +56,7 @@ try:
         1,
         inplace=True,
     )
-    st.write("Open Interest")
+    st.markdown("## Open Interest")
     st.bar_chart(data_for_chart)
 
     data_for_changeinOpenInterest = None
@@ -60,9 +64,7 @@ try:
         data_for_changeinOpenInterest = n.index_option_chain(selected_symbol)
     else:
         data_for_changeinOpenInterest = n.equity_option_chain(selected_symbol)
-    # data_for_changeinOpenInterest = n.equity_option_chain(selected_symbol)
     data_for_changeinOpenInterest = pd.json_normalize(data_for_changeinOpenInterest['filtered']['data'])
-    # logger.info(data_for_changeinOpenInterest)
     data_for_changeinOpenInterest.index = data_for_changeinOpenInterest.get("strikePrice")
     data_for_changeinOpenInterest.drop(
         data_for_changeinOpenInterest.columns.difference(
@@ -71,8 +73,8 @@ try:
         1,
         inplace=True,
     )
-    st.write("Changed Open Interest")
+    st.markdown("## Changed Open Interest")
     st.bar_chart(data_for_changeinOpenInterest)
 except Exception as e:
     st.error(e)
-    print(e)
+    logger.error(e)
