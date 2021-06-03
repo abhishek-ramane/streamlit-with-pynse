@@ -1,1 +1,1 @@
-web: sh setup.sh && streamlit run Test.py
+web: sh setup.sh && streamlit run Option-Analysis.py
