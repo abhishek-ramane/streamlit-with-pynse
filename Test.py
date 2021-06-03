@@ -1,7 +1,9 @@
 from jugaad_data.nse import NSELive
+import streamlit as st
 
 n = NSELive()
-quotes = n.stock_quote_fno("HDFC")
+option_chain = n.index_option_chain("NIFTY")
 
-for quote in quotes['stocks']:
-    print("{}\t{}".format(quote['metadata']['identifier'], quote['metadata']['lastPrice']))
+for option in option_chain['filtered']['data']:
+    st.write("CE_LastPrice:{}\tstrikePrice:{}\tPE_LastPrice:{}".format(option['CE']['lastPrice'], option['strikePrice'],
+                                                                       option['PE']['lastPrice']))
