@@ -14,8 +14,9 @@ logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.DEBUG, format="%(asctime)s;%(levelname)s;%(message)s")
 st.set_page_config(layout='wide')
 
-symbols = ["NIFTY", "BANKNIFTY", "AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT", "AMBUJACEM",
-           "APLLTD", "APOLLOHOSP", "APOLLOTYRE", "ASHOKLEY", "ASIANPAINT", "AUBANK", "AUROPHARMA", "AXISBANK",
+symbols = ["NIFTY", "BANKNIFTY", "FINNIFTY", "AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "ALKEM", "AMARAJABAT",
+           "AMBUJACEM", "APLLTD", "APOLLOHOSP", "APOLLOTYRE", "ASHOKLEY", "ASIANPAINT", "AUBANK", "AUROPHARMA",
+           "AXISBANK",
            "BAJAJ-AUTO", "BAJAJFINSV",
            "BAJFINANCE", "BALKRISIND", "BANDHANBNK", "BANKBARODA", "BATAINDIA", "BEL", "BERGEPAINT", "BHARATFORG",
            "BHARTIARTL", "BHEL", "BIOCON", "BOSCHLTD", "BPCL", "BRITANNIA", "CADILAHC", "CANBK", "CHOLAFIN", "CIPLA",
@@ -35,13 +36,21 @@ symbols = ["NIFTY", "BANKNIFTY", "AARTIIND", "ACC", "ADANIENT", "ADANIPORTS", "A
 
 selected_symbol = st.sidebar.selectbox("Select Tiker", symbols)
 st.title(f"Open Interest : {selected_symbol}")
-try:
-    logger.info(f'Will fetch the data for {selected_symbol}')
+
+
+def getData():
     data = None
-    if selected_symbol in ["NIFTY", "BANKNIFTY"]:
+    if selected_symbol in ["NIFTY", "BANKNIFTY", "FINNIFTY"]:
         data = n.index_option_chain(selected_symbol)
     else:
         data = n.equity_option_chain(selected_symbol)
+    return data
+
+
+try:
+    st.button('Refresh')
+    logger.info(f'Will fetch the data for {selected_symbol}')
+    data = getData()
     # st.write(data)
     st.markdown(f":rocket: ** Current Price :** {data['records']['underlyingValue']}")
     st.markdown(f":hourglass: ** Updated :** {data['records']['timestamp']}")
@@ -59,11 +68,7 @@ try:
     st.markdown("## Open Interest")
     st.bar_chart(data_for_chart)
 
-    data_for_changeinOpenInterest = None
-    if selected_symbol in ["NIFTY", "BANKNIFTY"]:
-        data_for_changeinOpenInterest = n.index_option_chain(selected_symbol)
-    else:
-        data_for_changeinOpenInterest = n.equity_option_chain(selected_symbol)
+    data_for_changeinOpenInterest = getData()
     data_for_changeinOpenInterest = pd.json_normalize(data_for_changeinOpenInterest['filtered']['data'])
     data_for_changeinOpenInterest.index = data_for_changeinOpenInterest.get("strikePrice")
     data_for_changeinOpenInterest.drop(
@@ -73,8 +78,6 @@ try:
         1,
         inplace=True,
     )
-    st.markdown("## Changed Open Interest")
-    st.bar_chart(data_for_changeinOpenInterest)
 except Exception as e:
     st.error(e)
     logger.error(e)
