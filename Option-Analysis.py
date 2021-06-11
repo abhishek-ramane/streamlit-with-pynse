@@ -78,6 +78,8 @@ try:
         1,
         inplace=True,
     )
+    st.markdown("## Changed Open Interest")
+    st.bar_chart(data_for_changeinOpenInterest)
 except Exception as e:
     st.error(e)
     logger.error(e)
